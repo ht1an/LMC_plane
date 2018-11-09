@@ -45,6 +45,9 @@ AEN = AENa[ind]
 BEF = BEFa[ind]
 EBV = EBVa[ind]
 
+Cra_tmp,Cdec_tmp = 78.77,-69.01
+ind_LMC =
+
 
 
 

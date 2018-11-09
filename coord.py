@@ -31,3 +31,5 @@ def PMradec2PMxy(PMra,PMdec,ra,dec,Cra,Cdec,CPMra=0,CPMdec=0,degree=True):
           PMdecc*(np.cos(dec)*np.cos(Cdec) +
                   np.sin(dec)*np.sin(Cdec)*np.cos(ra-Cra))
     return PMx,PMy
+
+
