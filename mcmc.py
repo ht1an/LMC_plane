@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.stats as stats
-
+import emcee
+import coord as C
 
 
 def gauss2_model(y, p0, N, func, nwalkers):
@@ -27,30 +28,29 @@ def gauss2_model(y, p0, N, func, nwalkers):
     return popt, pcov, samples
 
 
-def lnprob_gauss3(x, y):
+def lnprob_gauss3(x, z):
     # n = np.float(len(y))
-    f1 = x[0]
-    f2 = x[1]
-    mu1 = x[2]
-    sig1 = x[3]
-    mu2 = x[4]
-    sig2 = x[5]
-    mu3 = x[6]
-    sig3 = x[7]
+    Cra = x[0]   # Cra
+    Cdec = x[1]   # Cdec
+    Cpmra = x[2]  # Cpmra
+    Cpmdec = x[3] # Cpmdec
 
-    if np.isinf(f1) or np.isinf(f2) or np.isinf(mu1) or np.isinf(sig1) or \
-            np.isinf(mu2) or np.isinf(sig2) or np.isinf(mu3) or np.isinf(sig3) or \
-            f1 < 0 or f1 > 1 or f2 < 0 or f2 > 1 or (f1 + f2) < 0 or (f1 + f2) > 1 or \
-            sig1 < 0 or sig2 < 0 or sig3 < 0 or \
-            sig1 > 200 or sig2 > 200 or sig3 > 200 or \
-            mu1 > 100 or mu1 < -100 or mu3 > 0 or mu3 < -200 or mu2 > 300 or mu2 < 100:
-        return -1e100
-    g1 = f1 * stats.norm.pdf(y, mu1, sig1)  # np.exp(-(y-mu1)**2/(2*sig1**2))/(np.sqrt(2*np.pi)*sig1)
-    g2 = f2 * stats.norm.pdf(y, mu2, sig2)  # np.exp(-(y-mu2)**2/(2*sig2**2))/(np.sqrt(2*np.pi)*sig2)
-    g3 = (1 - f1 - f2) * stats.norm.pdf(y, mu3, sig3)  # np.exp(-(y-mu2)**2/(2*sig2**2))/(np.sqrt(2*np.pi)*sig2)
-    g = g1 + g2 + g3
-    # print g
-    ind_g = (np.isinf(g) == False) & (np.isnan(g) == False) & (g > 0)
-    logg = np.log(g[ind_g])
-    ind_lg = logg > -1e100
-    return np.sum(logg[ind_lg])
+    ra_tmp = z[:,0]
+    dec_tmp = z[:,1]
+
+    pmra_tmp = z[:,2]
+    pmdec_tmp = z[:,3]
+
+    xy = C.radec2xy(ra_tmp,dec_tmp,Cra,Cdec,degree=True)
+    pmxy = C.PMradec2PMxy(pmra_tmp,pmdec_tmp,ra_tmp,dec_tmp,
+                          Cra,Cdec,Cpmra,Cpmdec,degree=True)
+    x = xy[:,0]
+    y = xy[:,1]
+    pmx = pmxy[:,0]
+    pmy = pmxy[:,1]
+
+    L = x*pmy-y*pmx
+    L1 = L/np.abs(L)
+    S = np.sum(L1)
+    g = np.exp(S)
+    return g
