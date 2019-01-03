@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # this is used to use MCMC to constrain the inclination of the LMC plane
-# this line is used for test github -- pycharm connection
+# this line is used for test github -- pycharm connection ----V2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
